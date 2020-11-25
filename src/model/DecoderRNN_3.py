@@ -68,6 +68,7 @@ class DecoderRNN_3(BaseRNN):
         step_output: batch x classes , prob_log
         symbols: batch x 1
         '''
+        # print(step_output.shape, step_output.topk(1).shape)
         symbols = step_output.topk(1)[1] 
         return symbols
 
@@ -105,6 +106,7 @@ class DecoderRNN_3(BaseRNN):
         #attn_list = []
         decoder_hidden = decoder_init_hidden
         seq_len = decoder_inputs.size(1)
+        # print('forward_normal_teacher:', 'decoder_inputs', decoder_inputs.size(), 'encoder_outputs', encoder_outputs.shape);
         for di in range(seq_len):
             decoder_input = decoder_inputs[:, di]
             #deocder_input = torch.unsqueeze(decoder_input, 1)
@@ -112,17 +114,19 @@ class DecoderRNN_3(BaseRNN):
             decoder_output, decoder_hidden = self.forward_step(\
                 decoder_input, decoder_hidden, encoder_outputs, function=function)
             #attn_list.append(attn)
+            # print('decoder_output shape', decoder_output.shape);
             step_output = decoder_output.squeeze(1)
             if self.use_rule == False:
                 symbols = self.decode(di, step_output)
             else:
                 symbols = self.decode_rule(di, sequence_symbols_list, step_output)
+            # print('symbol', symbols)
             decoder_outputs_list.append(step_output)
             sequence_symbols_list.append(symbols)
         return decoder_outputs_list, decoder_hidden, sequence_symbols_list#, attn_list
 
     def symbol_norm(self, symbols):
-        symbols = symbols.view(-1).data.cpu().numpy() 
+        symbols = symbols.view(-1).data.cpu().numpy()
         new_symbols = []
         for idx in symbols:
             #print idx, 
@@ -269,11 +273,13 @@ class DecoderRNN_3(BaseRNN):
         
 
     def rule_filter(self, sequence_symbols_list, current):
+        # print('=======================================rule_filter')
         '''
         32*28
         '''
         op_list = ['+','-','*','/','^']
         cur_out = current.cpu().data.numpy()
+        # print('current out shape', cur_out.shape)
         #print len(sequence_symbols_list)
         #pdb.set_trace()
         cur_symbols = []

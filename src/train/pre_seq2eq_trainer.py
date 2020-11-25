@@ -94,7 +94,9 @@ class SupervisedTrainer(object):
                                       class_dict = self.class_dict,
                                       class_list = self.class_list)
         # cuda
+        # print('pre target_variables:', target_variables)
         target_variables = self._convert_f_e_2_d_sybmbol(target_variables)
+        # print('after target variables:', target_variables)
         if self.cuda_use:
             target_variables = target_variables.cuda()
 
@@ -105,8 +107,9 @@ class SupervisedTrainer(object):
         total = 0
 
         seq = symbols_list
+        # print('seq',seq)
         seq_var = torch.cat(seq, 1)
-
+        # print('seq_var shape', seq_var)
         self.loss.reset()
         for step, step_output in enumerate(decoder_outputs):
             # cuda step_output = step_output.cuda()
@@ -117,7 +120,7 @@ class SupervisedTrainer(object):
             non_padding = target.ne(pad_in_classes_idx)
             correct = seq[step].view(-1).eq(target).masked_select(non_padding).sum().item()#data[0]
             match += correct
-            total += non_padding.sum().item()#.data[0]
+            total += non_padding.sum().item()#.data[0] # total：所有表达式的元素数量
 
         right = 0
         for i in range(batch_size):
@@ -129,6 +132,7 @@ class SupervisedTrainer(object):
                     continue
                 #elif target_variables[i][j].data[0] == 1:
                 elif target_variables[i][j].item() == 1:
+                    # print('target variables:', target_variables[i], 'seq_var:',  seq_var)
                     right += 1
                     break
                 else:

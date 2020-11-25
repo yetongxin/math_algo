@@ -19,9 +19,9 @@ class DataLoader():
 
         self.emb_vectors, self.vocab_list, self.decode_classes_list = self.preprocess_and_word2vec(emb_dim)
         self.vocab_dict = dict([(elem, idx) for idx, elem in enumerate(self.vocab_list)])
-        self.vocab_len = len(self.vocab_list) 
+        self.vocab_len = len(self.vocab_list)
         self.decode_classes_dict = dict([(elem, idx) for idx, elem in enumerate(self.decode_classes_list)])
-        self.classes_len = len(self.decode_classes_list)   
+        self.classes_len = len(self.decode_classes_list)
         print ("data processed done!")
         self.test()
 
@@ -52,7 +52,7 @@ class DataLoader():
         emb_vectors.append(np.random.rand((emb_dim))/1000.0)
         emb_vectors.append(np.random.rand((emb_dim))/1000.0)
 
-        for k, v in sorted(new_data.items()): 
+        for k, v in sorted(new_data.items()):
             token_list.append(k)
             emb_vectors.append(np.array(model.wv[k]))
 
@@ -65,8 +65,8 @@ class DataLoader():
                 token_list.append(elem)
                 emb_vectors.append(np.random.rand((emb_dim))/1000.0)
         emb_vectors = np.array(emb_vectors)
-         
-        return emb_vectors, token_list, ext_list 
+
+        return emb_vectors, token_list, ext_list
 
     def inverse_temp_to_num(self, equ_list, num_list):
         alphabet = "abcdefghijklmnopqrstuvwxyz"
@@ -85,8 +85,8 @@ class DataLoader():
         equ_list = self.inverse_temp_to_num(equ, num_list)
         ans = post_solver(equ_list)
         print (t_ans, '--', ans, abs(float(t_ans) - float(ans)) < 1e-5  )
-        
-        
+
+
     def _data_batch_preprocess(self, data_batch, template_flag):
         batch_encode_idx = []
         batch_decode_idx = []
@@ -147,17 +147,17 @@ class DataLoader():
                 batch_decode_pad_idx.append(decode_sen_pad_idx)
 
         batch_data_dict = dict()
-        batch_data_dict['batch_encode_idx'] = batch_encode_idx
-        batch_data_dict['batch_encode_len'] = batch_encode_len
-        batch_data_dict['batch_encode_pad_idx'] = batch_encode_pad_idx
+        batch_data_dict['batch_encode_idx'] = batch_encode_idx  # 每个问题的所有词语 在字典中的序号数组，2d
+        batch_data_dict['batch_encode_len'] = batch_encode_len  # 每个问题的词语数目,1d
+        batch_data_dict['batch_encode_pad_idx'] = batch_encode_pad_idx  # 将每个问题的词语长度补充到最长，使用PAD_token的序号补充,2d
 
-        batch_data_dict['batch_index'] = batch_idxs
-        batch_data_dict['batch_text'] = batch_text
-        batch_data_dict['batch_num_list'] = batch_num_list
-        batch_data_dict['batch_solution'] = batch_solution
+        batch_data_dict['batch_index'] = batch_idxs  # 每个问题的id,1d
+        batch_data_dict['batch_text'] = batch_text  # 每个问题的文本,1d
+        batch_data_dict['batch_num_list'] = batch_num_list  # 每个问题的数字列表,1d
+        batch_data_dict['batch_solution'] = batch_solution  # 每个问题的答案列表（确切结果）,1d
 
         if template_flag:
-            batch_data_dict['batch_decode_idx'] = batch_decode_idx
+            batch_data_dict['batch_decode_idx'] = batch_decode_idx  # 每个问题的解决模版 的所有词语 在字典中的序号数组,2d
             batch_data_dict['batch_decode_len'] = batch_decode_len
             batch_data_dict['batch_decode_pad_idx'] = batch_decode_pad_idx
 
@@ -187,7 +187,7 @@ class DataLoader():
             yield batch_data_dict
     def test(self):
         print("dicts!!!!:",self.decode_classes_dict)
-        
+
 def test():
     args.post_flag = True
     data_loader = DataLoader(args)
@@ -199,7 +199,7 @@ def test():
     #for elem in gen_data:
     #    pass
         #print elem.keys()
-    #data_23k = DataMath23k(False) 
+    #data_23k = DataMath23k(False)
     #data_57k = DataUnlabel57k(False)
     #word2vec = Word2vec(data_23k, data_57k, False)
     #print word2vec.emb_vectors.shape
@@ -208,7 +208,7 @@ def test_57k():
     data_57k = DataUnlabel57k(False)
 
 def test_w2v():
-    data_23k = DataMath23k(False) 
+    data_23k = DataMath23k(False)
     data_57k = DataUnlabel57k(False)
     word2vec = Word2vec(data_23k, data_57k, False)
 #test()

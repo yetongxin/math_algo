@@ -250,6 +250,7 @@ class Evaluator(object):
                 #print target_equ
                 gen_ans = self.compute_gen_ans(seq_var[i], batch_num_list[i], post_flag)
                 gen_equ = self.get_new_tempalte(seq_var[i], batch_num_list[i])
+                # print('gen_ans:', gen_ans, 'gen_equ:', gen_equ)
                 target_ans = batch_solution[i]
                 #print gen_equ
                 #print 'gen_ans', gen_ans, '--', 'target_ans', target_ans, '---',

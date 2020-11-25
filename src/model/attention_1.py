@@ -155,7 +155,14 @@ class GroupAttention(nn.Module):
         self.src_mask_question = torch.from_numpy(group_mask(mask, "question", pad).astype('uint8')).unsqueeze(1)
         self.src_mask_global = (src != pad).unsqueeze(-2).unsqueeze(1)
         self.src_mask_global = self.src_mask_global.expand(self.src_mask_self.shape)
+        # print('src shape:',  src.size())
+        # print('src_mask_self shape:', self.src_mask_self.size())
+        # print('src_mask_between shape:', self.src_mask_between.size())
+        # print('src_mask_question shape:', self.src_mask_question.size())
+        # print('src_mask_global shape:', self.src_mask_question.size())
         self.final = torch.cat((self.src_mask_between.cuda(),self.src_mask_self.cuda(),self.src_mask_global.cuda(),self.src_mask_question.cuda()),1)
+
+        # print('final shape', self.final.size())
         return self.final.cuda()
 
     def forward(self, query, key, value, mask=None):

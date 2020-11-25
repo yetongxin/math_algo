@@ -7,8 +7,9 @@ from config import *
 args = get_args()
 data_loader = DataLoader(args)
 
-
+# 按逗号分割，相同的子句中设置为同一个token，遇到新逗号时token+1, 问题句子的token设置为1000
 def src_to_mask(src):
+    # src shape: [batch_size, seq_len]
     src = src.cpu().numpy()
     batch_data_mask_tok = []
     for encode_sen_idx in src:
@@ -25,16 +26,20 @@ def src_to_mask(src):
             if mask[num] == token and token != 1:
                 mask[num] = 1000
         batch_data_mask_tok.append(mask)
+    # [[1, 1, 1, 2, 2, 2, 3, 3,1000, 1000, 0, 0,...], [1, 1, 1, 2, 2, 2, 3, 3,1000, 1000, 0, 0,...],  ... ]
     return np.array(batch_data_mask_tok)
 
 
+# batch: 已mask为1，2，3, (1000),0,0,0....的batch
 def group_mask(batch,type="self",pad=0):
     length = batch.shape[1]
     lis = []
+    # 当前子句的设置为1， 其他设置为0
     if type=="self":
         for tok in batch:
             mask = np.zeros(tok.shape)
             mask = np.expand_dims(mask,-1)
+            # print('mask:', mask, mask.shape, tok.shape)
             for ele in tok:
                 if ele == pad:copy = np.zeros(length)
                 else:
@@ -49,12 +54,13 @@ def group_mask(batch,type="self",pad=0):
                     copy[copy == ele] = 0
                 '''
                 copy = np.expand_dims(copy,-1)
-                mask = np.concatenate((mask,copy),axis=1)
-            mask = mask[:,1:]
+                mask = np.concatenate((mask,copy),axis=1)  # 将copy按列叠加到Mask中
+            mask = mask[:,1:]  # 第一列是全0
             mask = mask.transpose()
-            mask = np.expand_dims(mask,0)
+            mask = np.expand_dims(mask,0)  # mask shape: [1, seq_len, seq_len]
             lis.append(mask)
-        res = np.concatenate(tuple(lis))
+        res = np.concatenate(tuple(lis)) # res shape: [batch_size, seq_len, seq_len]
+    # 当前子句和问题句子设置为0，其他子句设置为1
     elif type=="between":
         for tok in batch:
             mask = np.zeros(tok.shape)
@@ -87,7 +93,7 @@ def group_mask(batch,type="self",pad=0):
                     copy = tok.copy()
                     copy[copy != 1000] = 0
                     copy[copy == 1000] = 1
-                if ele==1000:
+                if ele==1000:  # question部分设置为0, 其他部分设置为1
                 	copy[copy==0] = -1
                 	copy[copy==1] = 0
                 	copy[copy==-1] = 1

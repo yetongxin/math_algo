@@ -14,7 +14,7 @@ from utils import NLLLoss, Optimizer, Checkpoint, Evaluator
 
 args = get_args()
 
-os.environ["CUDA_VISIBLE_DEVICES"] = '1'
+os.environ["CUDA_VISIBLE_DEVICES"] = '0'
 
 def step_one():
 
@@ -80,7 +80,7 @@ def step_one():
     print ('start training')
     st.train(model = seq2seq, 
              data_loader = data_loader,
-             batch_size = 128,
+             batch_size = 64,
              n_epoch = 300,
              template_flag = True,
              resume = args.resume,
