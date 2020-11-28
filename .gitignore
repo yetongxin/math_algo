@@ -1,6 +1,6 @@
 venv
 .idea
-experiment
+experiment/experiment
 src/__pycache__
 src/utils/__pycache__
 src/train/__pycache__
